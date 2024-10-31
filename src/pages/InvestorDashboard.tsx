@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, DollarSign, Scale } from 'lucide-react';
 import LineGraph from '../components/LineGraph';
+import { TokenCredit } from '../types/monitoring';
 
 interface YieldData {
   time: Date;
   monthlyYield: number;
   credits: number;
   projectedValue: number;
+  tokenCredits: TokenCredit;
 }
 
 interface FinancialMetrics {
@@ -34,8 +36,16 @@ const InvestorDashboard = () => {
       monthlyYield: Math.random() * 1000,
       credits: Math.random() * 500,
       projectedValue: Math.random() * 2000,
+      tokenCredits: {
+        baselineCredits: Math.random() * 1000,
+        qualityMultiplier: Math.random() * 10 + 1,
+        finalCreditValue: Math.random() * 1000
+      },
       time: new Date()
     });
+
+    const initialData = generateYieldData();
+    setYieldData([initialData]);
 
     const interval = setInterval(() => {
       const newData = generateYieldData();
@@ -89,6 +99,10 @@ const InvestorDashboard = () => {
             unit=" credits"
           />
         </div>
+
+        {yieldData.length > 0 && (
+          <TokenCreditSection tokenCredits={yieldData[yieldData.length - 1].tokenCredits} />
+        )}
       </div>
     </div>
   );
@@ -101,6 +115,32 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon }) => (
       <h3 className="text-lg font-semibold text-gray-700">{title}</h3>
     </div>
     <p className="text-3xl font-bold text-gray-900">{value}</p>
+  </div>
+);
+
+const TokenCreditSection: React.FC<{ tokenCredits: TokenCredit }> = ({ tokenCredits }) => (
+  <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+    <h2 className="text-xl font-semibold mb-4">Token Credit System</h2>
+    <div className="grid grid-cols-3 gap-4">
+      <div className="text-center">
+        <p className="text-sm text-gray-500">Baseline Credits</p>
+        <p className="text-2xl font-bold text-blue-500">
+          {tokenCredits.baselineCredits.toFixed(2)}
+        </p>
+      </div>
+      <div className="text-center">
+        <p className="text-sm text-gray-500">Quality Multiplier</p>
+        <p className="text-2xl font-bold text-green-500">
+          {tokenCredits.qualityMultiplier.toFixed(2)}x
+        </p>
+      </div>
+      <div className="text-center">
+        <p className="text-sm text-gray-500">Final Credit Value</p>
+        <p className="text-2xl font-bold text-purple-500">
+          {tokenCredits.finalCreditValue.toFixed(2)}
+        </p>
+      </div>
+    </div>
   </div>
 );
 
